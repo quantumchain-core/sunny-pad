@@ -21,7 +21,7 @@ No KYC. Non-custodial. Verified on Solscan.
 
 ### Architecture
 
-![Architecture](./docs/architecture.png)
+![Architecture](./docs/architecture.jpg)
 
 **Flow:**
 1.  **User** views `page.tsx` → fee display from `sunnypad.ts` → reads `constants.ts`
