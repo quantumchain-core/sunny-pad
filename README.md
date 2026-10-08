@@ -1,39 +1,15 @@
-# Sunny Pad — Decentralized Launchpad on Solana
+Sunny Pad — Decentralized meme launchpad on Solana.
 
-Launch a meme coin in 10 seconds. Trade permissionless. Creator earns forever.
+No KYC. No custody. Code is law.
 
-Live: sunnypad.fun | Program: SunnyPad111...111 | Chain: Solana Mainnet
+Launch a coin in 10s:
+- Launch fee: 0.02 SOL (0.01 treasury + 0.01 chain rent)
+- Trading fee: 1% total
+  • Other coins: 0.5% treasury + 0.5% creator (auto, on-chain)
+  • $SUNNY: 0.5% treasury + 0.5% competition vault
 
-## What is Sunny Pad?
+Features: Bonding curve, mint revoke, LP burn, Raydium graduation at 85 SOL, bundle check, IPFS.
 
-- **1% total fee** — 0.5% treasury + 0.5% creator / competition
-- **Launch fee:** 0.02 SOL — 0.01 treasury + 0.01 chain rent
-- **Creator earnings:** Automatic, on-chain, every trade
-- **Non-custodial:** SOL in program vault
-- **LP burned, Mint revoked** — verifiable on Solscan
-- **No KYC, wallet only**
+Stack: Anchor (Rust) + Next.js 14 + Supabase cache + Pinata.
 
-## Fees
-
-**Launch:** 0.02 SOL
-- 0.01 SOL → treasury
-- 0.01 SOL → chain rent
-
-**Trading:** 1%
-- If mint == SUNNY: 0.5% treasury + 0.5% competition vault
-- If other coin: 0.5% treasury + 0.5% creator
-
-## Program
-
-Open source Anchor bonding curve (MIT License).
-Standard x*y=k math.
-Verified: Solscan -> SunnyPad111...
-
-## Philosophy
-
-No team. No location. No custody.
-Code is law.
-
-## License
-
-MIT
+Open source. MIT. Verified on Solscan.
