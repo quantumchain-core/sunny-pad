@@ -1,44 +1,54 @@
-# Sunny Pad — Decentralized Launchpad on Solana
+# Sunny Pad 🌞 — Decentralized Meme Launchpad on Solana
 
-Launch a meme coin in 10 seconds. Trade permissionless. Creator earns forever.
+> Launch a meme coin in 10 seconds. Creator earns forever — automatically on-chain.
 
-Live: sunnypad.fun | Program: SunnyPad111...111 | Chain: Solana Mainnet
+Live: **https://sunnypad.fun** | Program: `SunnyPad1111111111111111111111111111111` | License: MIT
 
-## What is Sunny Pad?
+### Fee Structure (Verifiable On-Chain)
 
-- **1% total fee** — 0.5% treasury + 0.5% creator / competition
-- **Launch fee:** 0.02 SOL — 0.01 treasury + 0.01 chain rent
-- **Creator earnings:** Automatic, on-chain, every trade
-- **Non-custodial:** SOL in program vault
-- **LP burned, Mint revoked** — verifiable on Solscan
-- **No KYC, wallet only**
+**Launch:** `0.02 SOL` total
+- `0.01 SOL` → Treasury wallet
+- `0.01 SOL` → Rent / Vault
 
-## Fees
+**Trading:** `1%` total on every buy/sell
+- `0.5%` → Treasury wallet
+- `0.5%` → Creator wallet (auto on-chain, forever) OR Competition Vault if mint == SUNNY
+- 'Treasury: 0.5% every trade
+- 'Creator: 0.5% every trade (lifetime, automatic)
+- 'SUNNY token: 0.5% routes to competition vault
 
-**Launch:** 0.02 SOL
-- 0.01 SOL → treasury
-- 0.01 SOL → chain rent
+No KYC. Non-custodial. Verified on Solscan.
 
-**Trading:** 1%
-- If mint == SUNNY: 0.5% treasury + 0.5% competition vault
-- If other coin: 0.5% treasury + 0.5% creator
+### Architecture
 
-## Program
+![Architecture](./docs/architecture.png)
 
-Open source Anchor bonding curve (MIT License).
-Standard x*y=k math.
-Verified: Solscan -> SunnyPad111...
+**Flow:**
+1.  **User** views `page.tsx` → fee display from `sunnypad.ts` → reads `constants.ts`
+2.  **Launches / Trades** → calls `Anchor handlers [lib.rs]` in On-Chain Program
+3.  `lib.rs` updates `Curve state [bonding_curve.rs]` and initializes `Vault state [vault.rs]`
+4.  Executes on **Solana network**
+5.  Routes fees: `Treasury wallet`, `Creator wallet`, `Competition vault`
+6.  Supports: Token safeguards, Raydium graduation (at 85 SOL), Bundle check, IPFS metadata
+7.  External: Pinata (metadata storage), Supabase (cache only)
 
-## Philosophy
+### Repo Structure
+program/ -> Anchor program (lib.rs, bonding_curve.rs, vault.rs)
+app/ -> Next.js 14 frontend (page.tsx, sunnypad.ts, constants.ts)
+supabase/ -> Cache schema (no user data)
 
-No team. No location. No custody.
-Code is law.
+### Verify on Solscan
 
-## License
+1. Program ID: `SunnyPad1111111111111111111111111111111`
+2. Check `constants.ts` matches on-chain fees
+3. Treasury, creator, competition vault transfers are all SOL transfers in tx logs
 
-MIT
-Features: Bonding curve, mint revoke, LP burn, Raydium graduation at 85 SOL, bundle check, IPFS.
+### Deploy
 
-Stack: Anchor (Rust) + Next.js 14 + Supabase cache + Pinata.
+```bash
+# Frontend
+cd app && npm install && npm run dev
 
-Open source. MIT. Verified on Solscan.
+# Program
+cd program && anchor build && anchor deploy --provider.cluster devnet
+Built with ❤️ for Solana meme culture. Creator-first, forever
