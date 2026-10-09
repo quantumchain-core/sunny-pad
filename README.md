@@ -1,54 +1,34 @@
-# Sunny Pad 🌞 — Decentralized Meme Launchpad on Solana
+# Sunny Pad 🌞 — Solana Launchpad Prototype
 
-> Launch a meme coin in 10 seconds. Creator earns forever — automatically on-chain.
+> **Development status: NOT LIVE ON-CHAIN.** The currently deployed Vercel site is only a frontend preview. No Sunny Pad Solana program has been deployed, no valid Sunny Pad program ID has been assigned, and launch/buy/sell transactions are not available.
 
-Live: **https://sunnypad.fun** | Program: `SunnyPad1111111111111111111111111111111` | License: MIT
+Do not send funds or treat the fee model, token-launch flow, creator rewards, graduation, or Raydium integration described in earlier drafts as implemented.
 
-### Fee Structure (Verifiable On-Chain)
+## Current stack
 
-**Launch:** `0.02 SOL` total
-- `0.01 SOL` → Treasury wallet
-- `0.01 SOL` → Rent / Vault
+- `app/`: Next.js 14 frontend preview.
+- `program/`: Anchor/Rust program source, incomplete and not currently build-verified.
+- `supabase/`: proposed cache schema; it is not the source of truth for ownership or balances.
 
-**Trading:** `1%` total on every buy/sell
-- `0.5%` → Treasury wallet
-- `0.5%` → Creator wallet (auto on-chain, forever) OR Competition Vault if mint == SUNNY
-- 'Treasury: 0.5% every trade
-- 'Creator: 0.5% every trade (lifetime, automatic)
-- 'SUNNY token: 0.5% routes to competition vault
+## Current frontend behavior
 
-No KYC. Non-custodial. Verified on Solscan.
+The preview allows visitors to enter token name/symbol for display only. It does not connect a wallet, create transactions, launch tokens, or collect fees. The default RPC URL is Solana Devnet to avoid accidental mainnet use during development.
 
-### Architecture
+## Program status and ID
 
-![Architecture](./docs/architecture.jpg)
+A real program ID must be derived from the public key in a newly generated Solana program keypair, then used consistently in the Anchor source/config and frontend after a successful build and deployment. Do not use the former `SunnyPad111...` string; it is not a valid assigned program ID. Keep the program keypair private and backed up securely. Never commit secret keypairs or seed phrases to this repository.
 
-**Flow:**
-1.  **User** views `page.tsx` → fee display from `sunnypad.ts` → reads `constants.ts`
-2.  **Launches / Trades** → calls `Anchor handlers [lib.rs]` in On-Chain Program
-3.  `lib.rs` updates `Curve state [bonding_curve.rs]` and initializes `Vault state [vault.rs]`
-4.  Executes on **Solana network**
-5.  Routes fees: `Treasury wallet`, `Creator wallet`, `Competition vault`
-6.  Supports: Token safeguards, Raydium graduation (at 85 SOL), Bundle check, IPFS metadata
-7.  External: Pinata (metadata storage), Supabase (cache only)
+## Zero-budget development plan
 
-### Repo Structure
-program/ -> Anchor program (lib.rs, bonding_curve.rs, vault.rs)
-app/ -> Next.js 14 frontend (page.tsx, sunnypad.ts, constants.ts)
-supabase/ -> Cache schema (no user data)
+1. Restore a complete Anchor source tree and establish a reproducible build with a compatible Rust/Solana/Anchor toolchain.
+2. Define and test account/PDA authority constraints.
+3. Implement SPL mint and vault initialization.
+4. Implement checked bonding-curve math and atomic buy/sell settlement.
+5. Add adversarial Anchor tests for fee routing, account substitution, slippage, and reserve limits.
+6. Deploy to Devnet only after tests pass, using a real program keypair.
+7. Connect the frontend to the verified program interface.
+8. Consider Mainnet only after an independent review and a documented incident plan.
 
-### Verify on Solscan
+## Build status
 
-1. Program ID: `SunnyPad1111111111111111111111111111111`
-2. Check `constants.ts` matches on-chain fees
-3. Treasury, creator, competition vault transfers are all SOL transfers in tx logs
-
-### Deploy
-
-```bash
-# Frontend
-cd app && npm install && npm run dev
-
-# Program
-cd program && anchor build && anchor deploy --provider.cluster devnet
-Built with ❤️ for Solana meme culture. Creator-first, forever
+No successful Rust/Anchor compilation is claimed. The uploaded source is missing the referenced state module files, and the available review environment does not currently have `rustc`, `cargo`, `solana`, or `anchor`. Frontend build verification is also pending because the Next.js dependency is not installed in this environment.
