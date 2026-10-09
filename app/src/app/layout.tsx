@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sunny Pad — Decentralized Launchpad on Solana",
-  description: "Launch a meme coin in 10 seconds. 0.02 SOL launch, 1% trading fee (0.5% treasury + 0.5% creator/competition). Creator earns forever.",
+  title: "Sunny Pad — Solana Launchpad Preview",
+  description: "Sunny Pad is an early Solana launchpad prototype. On-chain launches and trading are not yet available.",
 };
 
 export default function RootLayout({
