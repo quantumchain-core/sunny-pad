@@ -5,7 +5,7 @@ pub mod state;
 use state::bonding_curve::*;
 use state::vault::*;
 
-declare_id!("SunnyPad1111111111111111111111111111111");
+declare_id!("4AxbLtzgYCfZxF4CJz9NWmPk5c8eosuuYesuaot1UrUb");
 
 /// SAFETY HOLD:
 /// The uploaded implementation does not initialize an SPL mint, does not settle
