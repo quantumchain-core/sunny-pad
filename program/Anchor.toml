@@ -3,13 +3,13 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-sunny_pad = "SunnyPad1111111111111111111111111111111"
+sunny_pad = "4AxbLtzgYCfZxF4CJz9NWmPk5c8eosuuYesuaot1UrUb"
 
 [programs.devnet]
-sunny_pad = "SunnyPad1111111111111111111111111111111"
+sunny_pad = "4AxbLtzgYCfZxF4CJz9NWmPk5c8eosuuYesuaot1UrUb"
 
 [programs.mainnet]
-sunny_pad = "SunnyPad1111111111111111111111111111111"
+sunny_pad = "4AxbLtzgYCfZxF4CJz9NWmPk5c8eosuuYesuaot1UrUb"
 
 [registry]
 url = "https://api.apr.dev"
