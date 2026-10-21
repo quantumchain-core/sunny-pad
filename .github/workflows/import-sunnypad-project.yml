@@ -1,0 +1,79 @@
+name: Import SunnyPad Project
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check uploaded project archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="sunnypad-full-project-35-sol.zip"
+          if [[ ! -f "$ARCHIVE" ]]; then
+            echo "::error::Upload $ARCHIVE to the repository root first."
+            exit 1
+          fi
+          unzip -t "$ARCHIVE"
+
+      - name: Back up current repository state
+        shell: bash
+        run: |
+          set -euo pipefail
+          BACKUP_BRANCH="backup-before-sunnypad-import-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git branch "$BACKUP_BRANCH"
+          git push origin "$BACKUP_BRANCH"
+          echo "Created backup branch: $BACKUP_BRANCH"
+
+      - name: Extract and import project files
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="sunnypad-full-project-35-sol.zip"
+          TEMP_DIR="$(mktemp -d)"
+          unzip -q "$ARCHIVE" -d "$TEMP_DIR"
+
+          # Find the project root by locating the Anchor workspace and app package.
+          ANCHOR_FILE="$(find "$TEMP_DIR" -type f -path '*/program/Anchor.toml' -print -quit)"
+          if [[ -z "$ANCHOR_FILE" ]]; then
+            echo "::error::Could not find program/Anchor.toml in the archive."
+            exit 1
+          fi
+          PROJECT_ROOT="${ANCHOR_FILE%/program/Anchor.toml}"
+
+          if [[ ! -f "$PROJECT_ROOT/app/package.json" ]]; then
+            echo "::error::Could not find app/package.json next to program/Anchor.toml."
+            exit 1
+          fi
+
+          # Import files while preserving the repository's .git directory.
+          # Existing files with matching paths will be replaced by the package.
+          cp -a "$PROJECT_ROOT/." "$GITHUB_WORKSPACE/"
+
+          # Do not keep the uploaded archive in the source repository.
+          rm -f "$GITHUB_WORKSPACE/$ARCHIVE"
+          rm -rf "$TEMP_DIR"
+
+      - name: Commit imported files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Import SunnyPad project scaffold (35 SOL graduation target)"
+          git push origin HEAD:"$GITHUB_REF_NAME"
