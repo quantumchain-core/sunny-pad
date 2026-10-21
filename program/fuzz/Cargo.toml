@@ -1,0 +1,17 @@
+[package]
+name = "sunny-pad-fuzz"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+sunny-pad = { path = "../programs/sunny-pad" }
+
+[[bin]]
+name = "quote_math"
+path = "fuzz_targets/quote_math.rs"
+test = false
+doc = false

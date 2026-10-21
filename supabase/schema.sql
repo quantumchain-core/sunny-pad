@@ -1,32 +1,22 @@
--- Cache only, no user data, non-custodial
--- For frontend speed only
-
-create table if not exists coins (
+-- Public metadata cache only. Solana accounts are the source of truth.
+-- No profiles, email addresses, private keys, seed phrases, or trader tracking.
+create table if not exists public.coins (
   mint text primary key,
   creator text not null,
   name text not null,
   symbol text not null,
   uri text,
-  virtual_sol_reserves bigint,
-  virtual_token_reserves bigint,
-  real_sol_reserves bigint,
-  complete boolean default false,
-  created_at timestamp default now()
+  created_at timestamptz not null default now(),
+  is_revoked boolean not null default false,
+  is_burned boolean not null default false,
+  holder_count integer not null default 0 check (holder_count >= 0)
 );
 
-create table if not exists trades (
-  id uuid primary key default gen_random_uuid(),
-  mint text references coins(mint),
-  type text check (type in ('buy','sell')),
-  sol_amount bigint,
-  token_amount bigint,
-  fee_treasury bigint,
-  fee_creator_or_competition bigint,
-  trader text,
-  tx_signature text,
-  created_at timestamp default now()
-);
+create index if not exists coins_created_at_idx on public.coins(created_at desc);
+create index if not exists coins_creator_idx on public.coins(creator);
 
--- Index for fast queries
-create index if not exists idx_coins_creator on coins(creator);
-create index if not exists idx_trades_mint on trades(mint);
+alter table public.coins enable row level security;
+drop policy if exists "Coins are publicly readable cache rows" on public.coins;
+create policy "Coins are publicly readable cache rows" on public.coins for select using (true);
+-- No anonymous INSERT/UPDATE/DELETE policy. A trusted indexer/service role should
+-- update the cache from confirmed chain events. Never expose a service-role key.

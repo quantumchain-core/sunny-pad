@@ -14,8 +14,6 @@ test-ledger/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-# Solana deployment secrets: never commit keypairs
-program-keypair.json
-*-program-keypair.json
-*program-keypair*.json
-program/target/deploy/
+.vercel/
+program/fuzz/artifacts/
+program/fuzz/coverage/

@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: black;
-  color: white;
-}
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #08090d; color: #f8fafc; font-family: Arial, Helvetica, sans-serif; }
+button, input { font: inherit; }
+::selection { background: #facc15; color: #111827; }

@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "./Providers";
 
 export const metadata: Metadata = {
-  title: "Sunny Pad — Solana Launchpad Preview",
-  description: "Sunny Pad is an early Solana launchpad prototype. On-chain launches and trading are not yet available.",
+  title: "SunnyPad — Solana Meme Launchpad",
+  description: "A creator-first Solana launchpad with transparent on-chain fees and bonding-curve trading.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className="bg-black text-white antialiased">{children}</body>
-    </html>
-  );
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <html lang="en"><body><Providers>{children}</Providers></body></html>;
 }

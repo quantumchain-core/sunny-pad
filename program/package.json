@@ -1,0 +1,23 @@
+{
+  "name": "sunny-pad-program-tests",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "test": "anchor test",
+    "test:integration": "ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts",
+    "test:unit": "cargo test --workspace",
+    "lint": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings",
+    "audit": "cargo audit"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "0.30.1",
+    "@solana/spl-token": "^0.4.8",
+    "@solana/web3.js": "^1.91.8",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "chai": "^4.4.1",
+    "mocha": "^10.3.0",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^5.3.3"
+  }
+}
