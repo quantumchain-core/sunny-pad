@@ -1,0 +1,94 @@
+name: Import SunnyPad Source (No Workflow Files)
+
+on:
+  workflow_dispatch:
+
+# This workflow intentionally does NOT import or modify .github/workflows/.
+# The default GITHUB_TOKEN only needs contents: write for the source-file push.
+permissions:
+  contents: write
+
+jobs:
+  import-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate project archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="sunnypad-full-project-35-sol.zip"
+          if [[ ! -f "$ARCHIVE" ]]; then
+            echo "::error::Missing $ARCHIVE in the repository root. Upload the ZIP first."
+            exit 1
+          fi
+          unzip -t "$ARCHIVE"
+
+      - name: Create and push backup branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BACKUP_BRANCH="backup-before-sunnypad-source-import-${GITHUB_RUN_ID}"
+          git branch "$BACKUP_BRANCH"
+          git push origin "$BACKUP_BRANCH"
+          echo "Backup branch created: $BACKUP_BRANCH"
+
+      - name: Import project files except workflow definitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="sunnypad-full-project-35-sol.zip"
+          TEMP_DIR="$(mktemp -d)"
+          trap 'rm -rf "$TEMP_DIR"' EXIT
+          unzip -q "$ARCHIVE" -d "$TEMP_DIR"
+
+          ANCHOR_FILE="$(find "$TEMP_DIR" -type f -path '*/program/Anchor.toml' -print -quit)"
+          if [[ -z "$ANCHOR_FILE" ]]; then
+            echo "::error::Archive does not contain program/Anchor.toml."
+            exit 1
+          fi
+
+          PROJECT_ROOT="${ANCHOR_FILE%/program/Anchor.toml}"
+          if [[ ! -f "$PROJECT_ROOT/app/package.json" ]]; then
+            echo "::error::Archive does not contain app/package.json beside program/Anchor.toml."
+            exit 1
+          fi
+
+          # Copy all project files except workflow definitions and the archive itself.
+          # Existing repository files at matching paths are replaced.
+          rsync -a --exclude='.git/' --exclude='.github/workflows/' \
+            --exclude='sunnypad-full-project-35-sol.zip' \
+            "$PROJECT_ROOT/" "$GITHUB_WORKSPACE/"
+
+          # Remove the uploaded ZIP after import so it is not kept in the source tree.
+          rm -f "$GITHUB_WORKSPACE/sunnypad-full-project-35-sol.zip"
+
+      - name: Verify key files and show pending changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f program/Anchor.toml
+          test -f app/package.json
+          test -f README.md
+          echo "Imported source files. Workflow files were intentionally left unchanged."
+          git status --short
+
+      - name: Commit and push imported source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
+          git commit -m "Import SunnyPad source scaffold with 35 SOL graduation target"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
